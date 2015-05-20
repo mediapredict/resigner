@@ -7,6 +7,7 @@ from django.http import Http404
 
 from .models import ApiKey
 
+
 def signed_req_required(api_secret_key_name):
 
     def _signed_req_required(view_func):

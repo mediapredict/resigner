@@ -19,7 +19,6 @@ setup(
     package_data={},
     install_requires=[
         "django >= 1.6",
-        "Pillow",
     ],
     long_description=__doc__,
     classifiers=[

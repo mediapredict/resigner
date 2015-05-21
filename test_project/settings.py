@@ -10,7 +10,7 @@ TEMPLATE_DEBUG = DEBUG
 SECRET_KEY = "thisIsTotallyASecretJkLolHaHa!1!!1!"
 
 X_API_KEY = "some_x_api_key"
-API_MAX_DELAY = 5
+API_MAX_DELAY = 1
 
 DATABASES = {
     'default': {

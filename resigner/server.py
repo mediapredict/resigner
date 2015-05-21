@@ -21,14 +21,19 @@ def signed_req_required(api_secret_key_name):
 
             def is_signature_ok():
                 api_signature = request.META["HTTP_X_API_SIGNATURE"]
+                if hasattr(settings, 'RESIGNER_API_MAX_DELAY'):
+                    max_delay = settings.RESIGNER_API_MAX_DELAY
+                else:
+                    max_delay = 10
+
                 try:
                     api_secret_key = ApiKey.objects.get(key=api_secret_key_name).secret
                     x_api_key_args = {
                         "s": api_signature,
                         "key": api_secret_key + data_hash(),
-                        "max_age": settings.API_MAX_DELAY,
+                        "max_age": max_delay,
                         }
-                    if settings.X_API_KEY == signing.loads(**x_api_key_args):
+                    if settings.RESIGNER_X_API_KEY == signing.loads(**x_api_key_args):
                         return True
 
                 except:

@@ -23,7 +23,7 @@ class TestSignedApi(TestCase):
 
 
     def call_api(self, data=None,
-                 x_api_key=settings.X_API_KEY,
+                 x_api_key=settings.RESIGNER_X_API_KEY,
                  api_key_secret_value=None,
                  callback_func=None):
 

@@ -15,7 +15,7 @@ setup(
     license='GPLv3',
     keywords='django api signed',
     url='http://resigner.mediapredict.com',
-    packages=['resigner', ],
+    packages=['resigner', 'resigner.migrations'],
     package_data={},
     install_requires=[
         "django >= 1.6",

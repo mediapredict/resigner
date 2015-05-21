@@ -6,6 +6,7 @@ from django.core import signing
 from django.http import Http404
 
 from .models import ApiKey
+from .utils import data_hash
 
 
 def signed_req_required(api_secret_key_name):
@@ -13,11 +14,6 @@ def signed_req_required(api_secret_key_name):
     def _signed_req_required(view_func):
 
         def check_signature(request, *args, **kwargs):
-            def data_hash():
-                hash = hashlib.sha1()
-                req_method = request.POST if request.method == 'POST' else request.GET
-                hash.update(str(req_method.dict()))
-                return hash.hexdigest()[:10]
 
             def is_signature_ok():
                 api_signature = request.META["HTTP_X_API_SIGNATURE"]
@@ -30,7 +26,7 @@ def signed_req_required(api_secret_key_name):
                     api_secret_key = ApiKey.objects.get(key=api_secret_key_name).secret
                     x_api_key_args = {
                         "s": api_signature,
-                        "key": api_secret_key + data_hash(),
+                        "key": api_secret_key + data_hash(request.body),
                         "max_age": max_delay,
                         }
                     if settings.RESIGNER_X_API_KEY == signing.loads(**x_api_key_args):

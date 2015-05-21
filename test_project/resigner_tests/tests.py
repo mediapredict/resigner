@@ -18,7 +18,7 @@ class TestSignedApi(TestCase):
     def test_update_api(self):
         from django.conf import settings
 
-        data = {u"MY_TEST_DATA": "hello from test script!"}
+        data = {u"MY_TEST_DATA": u"hello from test script!"}
         url = reverse("my_test_api")
 
         headers = get_security_headers(

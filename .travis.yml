@@ -1,9 +1,7 @@
 language: python
 
 python:
-  - "2.6"
   - "2.7"
-  - "3.3"
   - "3.4"
 
 env:
@@ -15,18 +13,10 @@ env:
 matrix:
   allow_failures:
     - env: DJANGO_VERSION=dev
-    - python: "3.3"
-    - python: "3.4"
-  exclude:
-    - env: DJANGO_VERSION=dev
-      python: "2.6"
-    - env: DJANGO_VERSION=1.7
-      python: "2.6"
-    - env: DJANGO_VERSION=1.8
-      python: "2.6"
 
 install:
-    - pip install tox
+  - pip install django==${DJANGO}
+  - pip install .
 
 script:
-    - tox -e py${TRAVIS_PYTHON_VERSION/./}-${DJANGO_VERSION}
+  - python test_project/manage.py test resigner_tests

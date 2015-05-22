@@ -18,7 +18,7 @@ setup(
     packages=['resigner', 'resigner.migrations'],
     package_data={},
     install_requires=[
-        "django >= 1.6",
+        "django >= 1.7",
         "requests >= 2.5",
     ],
     long_description=__doc__,

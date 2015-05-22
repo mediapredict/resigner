@@ -1,5 +1,7 @@
 [![travis ci](https://travis-ci.org/mediapredict/resigner.png)](https://travis-ci.org/mediapredict/resigner)
 
+# Resigner doc
+
 ## How to install
 
 ```
@@ -15,9 +17,9 @@ In settings.py:
 RESIGNER_X_API_KEY = "some_x_api_key"
 
 INSTALLED_APPS = (
- ...
+    ...
     'resigner',
- ...
+    ...
 )
 ```
 
@@ -29,8 +31,8 @@ RESIGNER_API_MAX_DELAY = 1 # max delay in seconds
 
 ## Usage (in progress)
 
-Server
-------
+### Server
+
 ```python
 from django.http import JsonResponse
 
@@ -45,14 +47,19 @@ def my_api_view(request):
 Add MY_API_KEY (key) and my_secret_key (secret) through admin/ApiKeys.
 
 
-Client
-------
+### Client
+
 
 ```python
 ...
 res = post_signed(
     "http://mysite/api_url", {"key": "val"}, settings.RESIGNER_X_API_KEY, "my_secret_key"
 )
+
+if res.status_code == 200:
+    print "went good!"
+else:
+    print "error HTTP status_code:{0}".format(res.status_code)
 ...
 ```
 

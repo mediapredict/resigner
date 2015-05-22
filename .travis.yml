@@ -16,7 +16,7 @@ matrix:
     - python: 3.4
 
 install:
-  - pip install django==${DJANGO}
+  - pip install django==${DJANGO_VERSION}
   - pip install .
 
 script:

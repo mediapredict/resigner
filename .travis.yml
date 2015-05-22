@@ -13,6 +13,7 @@ env:
 matrix:
   allow_failures:
     - env: DJANGO_VERSION=dev
+    - python: 3.4
 
 install:
   - pip install django==${DJANGO}

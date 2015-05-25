@@ -139,19 +139,14 @@ class TestSignedApiBase(object):
         def collect_signatures(req):
             signatures.append(req.headers["X-API-SIGNATURE"])
 
-        def send_api_req():
-            self.assert_200_res_ok(
+        send = lambda : self.assert_200_res_ok(
                 self.deconstructed_client_api_call(callback_func=collect_signatures)
-            )
+        )
+        sleep = lambda : time.sleep(1)
 
-        send_api_req()
+        [func() for func in [send, sleep, send, sleep, send]]
 
-        time.sleep(1)
-        send_api_req()
-
-        time.sleep(1)
-        send_api_req()
-
+        # all signatures are different
         self.assertEqual(len(set(signatures)), 3)
 
 

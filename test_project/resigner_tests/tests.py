@@ -24,6 +24,10 @@ class TestSignedApi(LiveServerTestCase):
     def assertApiResult(self, res, result):
         self.assertEqual(json.loads(res.content)["result"], result)
 
+    def assert_200_res_ok(self, res):
+        self.assertEqual(res.status_code, 200)
+        self.assertApiResult(res, "test ok")
+
     def get_api_params(self, data=None,
                  x_api_key=settings.RESIGNER_X_API_KEY,
                  api_key_secret_value=None):
@@ -50,10 +54,9 @@ class TestSignedApi(LiveServerTestCase):
         return post_signed(**kwargs)
 
     def test_api_result_ok(self):
-        res = self.call_api()
-
-        self.assertEqual(res.status_code, 200)
-        self.assertApiResult(res, "test ok")
+        self.assert_200_res_ok(
+            self.call_api()
+        )
 
     def test_api_result_nok(self):
         res = self.call_api({u"SOMETHING_UNEXPECTED": u"some_val"})
@@ -70,21 +73,19 @@ class TestSignedApi(LiveServerTestCase):
         self.assertEqual(res.status_code, 404)
 
 
-    def deconstructed_client_api_call(self, callback_func=None):
+    def deconstructed_client_api_call(self, callback_func=None, method="POST"):
         params = self.get_api_params()
 
-        req = _create_signed_req("POST", **params)
+        req = _create_signed_req(method, **params)
         if callback_func:
             callback_func(req)
 
         return _send_req(req)
 
-
     def test_deconstructed_client_api_OK(self):
-        res = self.deconstructed_client_api_call()
-
-        self.assertEqual(res.status_code, 200)
-        self.assertApiResult(res, "test ok")
+        self.assert_200_res_ok(
+            self.deconstructed_client_api_call()
+        )
 
     def test_deconstructed_client_api_max_timeout(self):
         def simulate_delay(req):
@@ -106,3 +107,31 @@ class TestSignedApi(LiveServerTestCase):
         res = self.deconstructed_client_api_call(simulate_missing_header)
 
         self.assertEqual(res.status_code, 404)
+
+    def assert_signature_each_second_different(self, method):
+        signatures = []
+        def collect_signatures(req):
+            signatures.append(req.headers["X-API-SIGNATURE"])
+
+        def send_api_req():
+            self.assert_200_res_ok(
+                self.deconstructed_client_api_call(
+                    callback_func=collect_signatures, method=method
+                )
+            )
+
+        send_api_req()
+
+        time.sleep(1)
+        send_api_req()
+
+        time.sleep(1)
+        send_api_req()
+
+        self.assertEqual(len(set(signatures)), 3)
+
+    def test_post_req_signature_each_second_different(self):
+        self.assert_signature_each_second_different("POST")
+
+    def test_get_req_signature_each_second_different(self):
+        self.assert_signature_each_second_different("GET")

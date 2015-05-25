@@ -7,10 +7,10 @@ from django.test.client import Client
 from django.conf import settings
 
 from resigner.models import ApiKey
-from resigner.client import post_signed, _send_req, _create_signed_req
+from resigner.client import post_signed, get_signed, _send_req, _create_signed_req
 
-class TestSignedApi(LiveServerTestCase):
-    def setUp(self):
+class TestSignedApiBase(object):
+    def setUpBase(self):
         self.client = Client()
         self.api_key_secret_value = "some_test_secret_value"
 
@@ -51,7 +51,8 @@ class TestSignedApi(LiveServerTestCase):
 
         kwargs = self.get_api_params(data, x_api_key, api_key_secret_value)
 
-        return post_signed(**kwargs)
+        return self.api_func()(**kwargs)
+
 
     def test_api_result_ok(self):
         self.assert_200_res_ok(
@@ -64,12 +65,6 @@ class TestSignedApi(LiveServerTestCase):
             self.call_api()
         )
 
-    def test_api_result_ok_answer_not_ok(self):
-        res = self.call_api({u"SOMETHING_UNEXPECTED": u"some_val"})
-
-        self.assertEqual(res.status_code, 200)
-        self.assertApiResult(res, "no data received")
-
     def test_wrong_x_api_key(self):
         res = self.call_api(x_api_key="some_wrong_x_api_key")
         self.assertEqual(res.status_code, 404)
@@ -79,10 +74,10 @@ class TestSignedApi(LiveServerTestCase):
         self.assertEqual(res.status_code, 404)
 
 
-    def deconstructed_client_api_call(self, callback_func=None, method="POST"):
+    def deconstructed_client_api_call(self, callback_func=None):
         params = self.get_api_params()
 
-        req = _create_signed_req(method, **params)
+        req = _create_signed_req(self.method_name, **params)
         if callback_func:
             callback_func(req)
 
@@ -139,16 +134,14 @@ class TestSignedApi(LiveServerTestCase):
         self.assertEqual(res.status_code, 404)
 
 
-    def assert_signature_changes_each_second(self, method):
+    def test_signature_changes_each_second(self):
         signatures = []
         def collect_signatures(req):
             signatures.append(req.headers["X-API-SIGNATURE"])
 
         def send_api_req():
             self.assert_200_res_ok(
-                self.deconstructed_client_api_call(
-                    callback_func=collect_signatures, method=method
-                )
+                self.deconstructed_client_api_call(callback_func=collect_signatures)
             )
 
         send_api_req()
@@ -161,8 +154,28 @@ class TestSignedApi(LiveServerTestCase):
 
         self.assertEqual(len(set(signatures)), 3)
 
-    def test_post_req_signature_each_second_different(self):
-        self.assert_signature_changes_each_second("POST")
 
-    def test_get_req_signature_each_second_different(self):
-        self.assert_signature_changes_each_second("GET")
+class TestSignedApiGet(LiveServerTestCase, TestSignedApiBase):
+    method_name = "GET"
+
+    def setUp(self):
+        self.setUpBase()
+
+    def api_func(self):
+        return get_signed
+
+
+class TestSignedApiPost(LiveServerTestCase, TestSignedApiBase):
+    method_name = "POST"
+
+    def setUp(self):
+        self.setUpBase()
+
+    def api_func(self):
+        return post_signed
+
+    def test_api_result_ok_answer_not_ok(self):
+        res = self.call_api({u"SOMETHING_UNEXPECTED": u"some_val"})
+
+        self.assertEqual(res.status_code, 200)
+        self.assertApiResult(res, "no data received")

@@ -94,21 +94,45 @@ class TestSignedApi(LiveServerTestCase):
 
         self.assertEqual(res.status_code, 404)
 
-    def test_deconstructed_client_signature_missing(self):
+    def test_signature_missing(self):
         def simulate_missing_header(req):
             del req.headers["X-API-SIGNATURE"]
         res = self.deconstructed_client_api_call(simulate_missing_header)
 
         self.assertEqual(res.status_code, 404)
 
-    def test_deconstructed_client_time_stamp_missing(self):
+
+    def selfAssertTimeStampDiff(self, diff, result):
+        def simulate_outdated_timestamp(req):
+            key = "TIME-STAMP"
+            ts = req.headers[key.lower()]
+            req.headers.update(
+                {key: str( int(ts) + diff )}
+            )
+
+        res = self.deconstructed_client_api_call(simulate_outdated_timestamp)
+        self.assertEqual(res.status_code, 404)
+
+    def test_timestamp_a_bit_outdated(self):
+        self.selfAssertTimeStampDiff(-25, 200)
+
+    def test_timestamp_really_outdated(self):
+        self.selfAssertTimeStampDiff(-6*60, 404)
+
+    def test_timestamp_in_the_near_future(self):
+        self.selfAssertTimeStampDiff(+20, 200)
+
+    def test_timestamp_in_the_distant_future(self):
+        self.selfAssertTimeStampDiff(10*60, 404)
+
+    def test_time_stamp_missing(self):
         def simulate_missing_header(req):
             del req.headers["TIME-STAMP"]
         res = self.deconstructed_client_api_call(simulate_missing_header)
 
         self.assertEqual(res.status_code, 404)
 
-    def assert_signature_each_second_different(self, method):
+    def assert_signature_changes_each_second(self, method):
         signatures = []
         def collect_signatures(req):
             signatures.append(req.headers["X-API-SIGNATURE"])
@@ -131,7 +155,7 @@ class TestSignedApi(LiveServerTestCase):
         self.assertEqual(len(set(signatures)), 3)
 
     def test_post_req_signature_each_second_different(self):
-        self.assert_signature_each_second_different("POST")
+        self.assert_signature_changes_each_second("POST")
 
     def test_get_req_signature_each_second_different(self):
-        self.assert_signature_each_second_different("GET")
+        self.assert_signature_changes_each_second("GET")

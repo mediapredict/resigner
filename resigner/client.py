@@ -6,7 +6,7 @@ from django.core import signing
 from .utils import data_hash
 
 
-def get_security_headers(req_body, x_api_key, api_secret_key,
+def _get_security_headers(req_body, x_api_key, api_secret_key,
                          header_api_key="X-API-SIGNATURE"):
 
     time_stamp = str(int(time.time()))
@@ -15,25 +15,32 @@ def get_security_headers(req_body, x_api_key, api_secret_key,
     return {header_api_key: value, "TIME-STAMP": time_stamp}
 
 
-def _send_req_signed(method, url, data, x_api_key, api_secret_key):
-    s = Session()
+def _create_signed_req(method, url, data, x_api_key, api_secret_key):
     req = Request(method, url, data=data)
 
     prepped = req.prepare()
     prepped.headers.update(
-        get_security_headers(prepped.body, x_api_key, api_secret_key)
+        _get_security_headers(prepped.body, x_api_key, api_secret_key)
     )
 
-    return s.send(prepped)
+    return prepped
+
+def _send_req(req):
+    return Session().send(req)
+
+def _send_signed_req(method, url, data, x_api_key, api_secret_key):
+    return _send_req(
+        _create_signed_req(method, url, data, x_api_key, api_secret_key)
+    )
 
 
 def post_signed(url, data, x_api_key, api_secret_key):
-    return _send_req_signed(
+    return _send_signed_req(
         "POST", url, data, x_api_key, api_secret_key
     )
 
 
 def get_signed(url, data, x_api_key, api_secret_key):
-    return _send_req_signed(
+    return _send_signed_req(
         "GET", url, data, x_api_key, api_secret_key
     )

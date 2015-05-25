@@ -15,17 +15,19 @@ def signed_req_required(api_secret_key_name):
         def check_signature(request, *args, **kwargs):
 
             def is_signature_ok():
-                api_signature = request.META["HTTP_X_API_SIGNATURE"]
                 if hasattr(settings, 'RESIGNER_API_MAX_DELAY'):
                     max_delay = settings.RESIGNER_API_MAX_DELAY
                 else:
                     max_delay = 10
 
                 try:
+                    api_signature = request.META["HTTP_X_API_SIGNATURE"]
+                    time_stamp = request.META["HTTP_TIME_STAMP"]
+
                     api_secret_key = ApiKey.objects.get(key=api_secret_key_name).secret
                     x_api_key_args = {
                         "s": api_signature,
-                        "key": api_secret_key + data_hash(request.body),
+                        "key": api_secret_key + data_hash(request.body, time_stamp),
                         "max_age": max_delay,
                         }
                     if settings.RESIGNER_X_API_KEY == signing.loads(**x_api_key_args):

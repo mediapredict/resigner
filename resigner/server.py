@@ -35,11 +35,12 @@ def signed_req_required(api_secret_key_name):
                 try:
                     api_secret_key = ApiKey.objects.get(key=api_secret_key_name).secret
                     time_stamp = request.META["HTTP_TIME_STAMP"]
+                    url = request.build_absolute_uri()
                     max_delay = get_settings_param("RESIGNER_API_MAX_DELAY", 10)
 
                     x_api_key_args = {
                         "s": api_signature,
-                        "key": api_secret_key + data_hash(request.body, time_stamp),
+                        "key": api_secret_key + data_hash(request.body, time_stamp, url),
                         "max_age": max_delay,
                         }
                     if settings.RESIGNER_X_API_KEY == signing.loads(**x_api_key_args):

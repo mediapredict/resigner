@@ -58,7 +58,13 @@ class TestSignedApi(LiveServerTestCase):
             self.call_api()
         )
 
-    def test_api_result_nok(self):
+    def test_api_result_ok_dummy_param(self):
+        self.url = self.url + "?dummy_param=33"
+        self.assert_200_res_ok(
+            self.call_api()
+        )
+
+    def test_api_result_ok_answer_not_ok(self):
         res = self.call_api({u"SOMETHING_UNEXPECTED": u"some_val"})
 
         self.assertEqual(res.status_code, 200)
@@ -131,6 +137,7 @@ class TestSignedApi(LiveServerTestCase):
         res = self.deconstructed_client_api_call(simulate_missing_header)
 
         self.assertEqual(res.status_code, 404)
+
 
     def assert_signature_changes_each_second(self, method):
         signatures = []

@@ -6,8 +6,7 @@ from django.core import signing
 from django.http import Http404
 
 from .models import ApiKey
-from .utils import data_hash, get_settings_param
-
+from .utils import data_hash, get_settings_param, SERVER_TIME_STAMP_KEY, SERVER_API_SIGNATURE_KEY
 
 def signed_req_required(api_secret_key_name):
 
@@ -16,9 +15,9 @@ def signed_req_required(api_secret_key_name):
         def check_signature(request, *args, **kwargs):
 
             def is_time_stamp_valid():
-                if not "HTTP_TIME_STAMP" in request.META.keys():
+                if not SERVER_TIME_STAMP_KEY in request.META.keys():
                     return False
-                received_times_stamp = request.META["HTTP_TIME_STAMP"]
+                received_times_stamp = request.META[SERVER_TIME_STAMP_KEY]
 
                 max_delay = get_settings_param("RESIGNER_TIME_STAMP_MAX_DELAY", 5*60)
                 time_stamp_now = time.time()
@@ -28,13 +27,13 @@ def signed_req_required(api_secret_key_name):
                 )
 
             def is_signature_ok():
-                if not "HTTP_X_API_SIGNATURE" in request.META.keys():
+                if not SERVER_API_SIGNATURE_KEY in request.META.keys():
                     return False
-                api_signature = request.META["HTTP_X_API_SIGNATURE"]
+                api_signature = request.META[SERVER_API_SIGNATURE_KEY]
 
                 try:
                     api_secret_key = ApiKey.objects.get(key=api_secret_key_name).secret
-                    time_stamp = request.META["HTTP_TIME_STAMP"]
+                    time_stamp = request.META[SERVER_TIME_STAMP_KEY]
                     url = request.build_absolute_uri()
                     max_delay = get_settings_param("RESIGNER_API_MAX_DELAY", 10)
 

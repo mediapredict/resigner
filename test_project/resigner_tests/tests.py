@@ -8,6 +8,8 @@ from django.conf import settings
 
 from resigner.models import ApiKey
 from resigner.client import post_signed, get_signed, _send_req, _create_signed_req
+from resigner.utils import CLIENT_TIME_STAMP_KEY, CLIENT_API_SIGNATURE_KEY
+
 
 class TestSignedApiBase(object):
     def setUpBase(self):
@@ -97,7 +99,7 @@ class TestSignedApiBase(object):
 
     def test_signature_missing(self):
         def simulate_missing_header(req):
-            del req.headers["X-API-SIGNATURE"]
+            del req.headers[CLIENT_API_SIGNATURE_KEY]
         res = self.deconstructed_client_api_call(simulate_missing_header)
 
         self.assertEqual(res.status_code, 404)
@@ -105,7 +107,7 @@ class TestSignedApiBase(object):
 
     def selfAssertTimeStampDiff(self, diff, result):
         def simulate_outdated_timestamp(req):
-            key = "TIME-STAMP"
+            key = CLIENT_TIME_STAMP_KEY
             ts = req.headers[key.lower()]
             req.headers.update(
                 {key: str( int(ts) + diff )}
@@ -128,7 +130,7 @@ class TestSignedApiBase(object):
 
     def test_time_stamp_missing(self):
         def simulate_missing_header(req):
-            del req.headers["TIME-STAMP"]
+            del req.headers[CLIENT_TIME_STAMP_KEY]
         res = self.deconstructed_client_api_call(simulate_missing_header)
 
         self.assertEqual(res.status_code, 404)
@@ -137,7 +139,7 @@ class TestSignedApiBase(object):
     def test_signature_changes_each_second(self):
         signatures = []
         def collect_signatures(req):
-            signatures.append(req.headers["X-API-SIGNATURE"])
+            signatures.append(req.headers[CLIENT_API_SIGNATURE_KEY])
 
         send = lambda : self.assert_200_res_ok(
                 self.deconstructed_client_api_call(callback_func=collect_signatures)

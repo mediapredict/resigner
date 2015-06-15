@@ -97,7 +97,7 @@ class TestSignedApiBase(object):
 
     def test_deconstructed_client_api_max_timeout(self):
         def simulate_delay(req):
-            time.sleep(1)
+            time.sleep(1.1)
         res = self.deconstructed_client_api_call(simulate_delay)
 
         self.assertEqual(res.status_code, 404)

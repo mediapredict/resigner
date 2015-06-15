@@ -14,8 +14,6 @@ In settings.py:
 
 ```python
 
-RESIGNER_X_API_KEY = "some_x_api_key"
-
 INSTALLED_APPS = (
     ...
     'resigner',
@@ -44,7 +42,9 @@ def my_api_view(request):
     return JsonResponse(resp)
 ```
 
-Add MY_API_KEY (key) and my_secret_key (secret) through admin/ApiKeys.
+Add through admin:
+* in `ApiKeys` (this identifies the API): _MY_API_KEY_ (key) and _my_secret_key_ (secret)
+* in `ApiClients` (this identifies the client): _MY_TEST_CLIENT_ (name) _and my_client_key_ (key)
 
 
 ### Client
@@ -53,7 +53,7 @@ Add MY_API_KEY (key) and my_secret_key (secret) through admin/ApiKeys.
 ```python
 ...
 res = post_signed(
-    "http://mysite/api_url", {"key": "val"}, settings.RESIGNER_X_API_KEY, "my_secret_key"
+    "http://mysite/api_url", {"key": "val"}, "my_client_key", "my_secret_key"
 )
 
 if res.status_code == 200:
@@ -63,4 +63,4 @@ else:
 ...
 ```
 
-Make sure _MY_API_KEY_ has been added as explained above.
+Make sure _MY_API_KEY_ and _MY_TEST_CLIENT_ have been added in the server's DB as explained above.

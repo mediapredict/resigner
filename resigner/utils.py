@@ -9,9 +9,11 @@ to_server_key = lambda key : "{0}{1}{2}".format("HTTP", "-", key).replace("-", "
 
 CLIENT_TIME_STAMP_KEY = add_prefix("TIME-STAMP")
 CLIENT_API_SIGNATURE_KEY = add_prefix("API-SIGNATURE")
+CLIENT_API_KEY = add_prefix("X-API-KEY")
 
 SERVER_TIME_STAMP_KEY = to_server_key(CLIENT_TIME_STAMP_KEY)
 SERVER_API_SIGNATURE_KEY = to_server_key(CLIENT_API_SIGNATURE_KEY)
+SERVER_API_KEY = to_server_key(CLIENT_API_KEY)
 
 def data_hash(req_body, time_stamp, url):
     hash = hashlib.sha1()

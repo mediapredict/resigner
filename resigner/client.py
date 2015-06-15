@@ -4,7 +4,8 @@ from requests import Request, Session
 from django.core import signing
 
 from .utils import data_hash
-from .utils import data_hash, get_settings_param, CLIENT_TIME_STAMP_KEY, CLIENT_API_SIGNATURE_KEY
+from .utils import data_hash, get_settings_param, \
+    CLIENT_TIME_STAMP_KEY, CLIENT_API_SIGNATURE_KEY, CLIENT_API_KEY
 
 
 def _get_security_headers(req_body, x_api_key, api_secret_key, url,
@@ -14,7 +15,11 @@ def _get_security_headers(req_body, x_api_key, api_secret_key, url,
 
     value = signing.dumps(x_api_key, key=key)
 
-    return {header_api_key: value, CLIENT_TIME_STAMP_KEY: time_stamp}
+    return {
+        CLIENT_API_KEY: x_api_key, # uniquely identifies client
+        header_api_key: value,
+        CLIENT_TIME_STAMP_KEY: time_stamp
+    }
 
 def _create_signed_req(method, url, data, x_api_key, api_secret_key):
     req = Request(method, url, data=data)

@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.conf import settings
 
-from resigner.models import ApiKey
+from resigner.models import ApiKey, ApiClient
 from resigner.client import post_signed, get_signed, _send_req, _create_signed_req
 from resigner.utils import CLIENT_TIME_STAMP_KEY, CLIENT_API_SIGNATURE_KEY
 
@@ -21,6 +21,11 @@ class TestSignedApiBase(object):
             secret=self.api_key_secret_value,
         )
 
+        ApiClient.objects.create(
+            name="My test client",
+            key=settings.TEST_RESIGNER_X_API_KEY,
+        )
+
         self.url = self.live_server_url + reverse("my_test_api")
 
     def assertApiResult(self, res, result):
@@ -31,7 +36,7 @@ class TestSignedApiBase(object):
         self.assertApiResult(res, "test ok")
 
     def get_api_params(self, data=None,
-                 x_api_key=settings.RESIGNER_X_API_KEY,
+                 x_api_key=settings.TEST_RESIGNER_X_API_KEY,
                  api_key_secret_value=None):
 
         if data == None:
@@ -48,7 +53,7 @@ class TestSignedApiBase(object):
         }
 
     def call_api(self, data=None,
-                 x_api_key=settings.RESIGNER_X_API_KEY,
+                 x_api_key=settings.TEST_RESIGNER_X_API_KEY,
                  api_key_secret_value=None):
 
         kwargs = self.get_api_params(data, x_api_key, api_key_secret_value)
@@ -69,7 +74,7 @@ class TestSignedApiBase(object):
 
     def test_wrong_x_api_key(self):
         res = self.call_api(x_api_key="some_wrong_x_api_key")
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 400)
 
     def test_wrong_secret(self):
         res = self.call_api(api_key_secret_value="wrong_secret")

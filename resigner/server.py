@@ -3,16 +3,31 @@ import time
 
 from django.conf import settings
 from django.core import signing
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 
-from .models import ApiKey
-from .utils import data_hash, get_settings_param, SERVER_TIME_STAMP_KEY, SERVER_API_SIGNATURE_KEY
+from .models import ApiKey, ApiClient
+from .utils import data_hash, get_settings_param, \
+    SERVER_TIME_STAMP_KEY, SERVER_API_SIGNATURE_KEY, SERVER_API_KEY
 
 def signed_req_required(api_secret_key_name):
 
     def _signed_req_required(view_func):
 
         def check_signature(request, *args, **kwargs):
+
+            def identify_api_client():
+                api_client = None
+
+                if not SERVER_API_KEY in request.META.keys():
+                    return api_client
+
+                client_identification = request.META[SERVER_API_KEY]
+                try:
+                    api_client = ApiClient.objects.get(key=client_identification)
+                except ApiClient.DoesNotExist:
+                    time.sleep(1) # rate limiting
+
+                return api_client
 
             def is_time_stamp_valid():
                 if not SERVER_TIME_STAMP_KEY in request.META.keys():
@@ -42,13 +57,17 @@ def signed_req_required(api_secret_key_name):
                         "key": api_secret_key + data_hash(request.body, time_stamp, url),
                         "max_age": max_delay,
                         }
-                    if settings.RESIGNER_X_API_KEY == signing.loads(**x_api_key_args):
+                    if api_client.key == signing.loads(**x_api_key_args):
                         return True
 
                 except:
                     pass
 
                 return False
+
+            api_client = identify_api_client()
+            if not api_client:
+               return HttpResponseBadRequest("The API KEY used in this request does not exist")
 
             if is_time_stamp_valid() and is_signature_ok():
                 return view_func(request, *args, **kwargs)

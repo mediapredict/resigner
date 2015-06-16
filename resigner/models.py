@@ -10,7 +10,7 @@ class ApiKey(models.Model):
 
 class ApiClient(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    key = models.CharField(max_length=32)
+    key = models.CharField(max_length=32, unique=True)
 
     def __unicode__(self):
         return "%s [%s]" % (self.name, self.id)

@@ -13,4 +13,4 @@ class ApiClient(models.Model):
     key = models.CharField(max_length=32)
 
     def __unicode__(self):
-        return "%s [%s]" % (self.key, self.id)
+        return "%s [%s]" % (self.name, self.id)

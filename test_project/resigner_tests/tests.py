@@ -14,12 +14,10 @@ from resigner.utils import CLIENT_TIME_STAMP_KEY, CLIENT_API_SIGNATURE_KEY
 class TestSignedApiBase(object):
     def setUpBase(self):
         self.client = Client()
-        self.api_key_secret_value = "some_test_secret_value"
 
-        ApiKey.objects.create(
-            key=settings.TEST_RESIGNER_X_API_KEY,
-            secret=self.api_key_secret_value,
-        )
+        api_key_obj = ApiKey.objects.create()
+        self.api_key = api_key_obj.key
+        self.api_secret = api_key_obj.secret
 
         self.url = self.live_server_url + reverse("my_test_api")
 
@@ -31,27 +29,29 @@ class TestSignedApiBase(object):
         self.assertApiResult(res, "test ok")
 
     def get_api_params(self, data=None,
-                 x_api_key=settings.TEST_RESIGNER_X_API_KEY,
-                 api_key_secret_value=None):
+                 api_key=None,
+                 api_secret=None):
+
 
         if data == None:
             data = {u"MY_TEST_DATA": u"hello from test script!"}
 
-        if api_key_secret_value == None:
-            api_key_secret_value = self.api_key_secret_value
+        if api_key == None:
+            api_key = self.api_key
+
+        if api_secret == None:
+            api_secret = self.api_secret
 
         return {
             "url": self.url,
             "data": data,
-            "x_api_key": x_api_key,
-            "api_secret_key": api_key_secret_value,
+            "x_api_key": api_key,
+            "api_secret_key": api_secret,
         }
 
-    def call_api(self, data=None,
-                 x_api_key=settings.TEST_RESIGNER_X_API_KEY,
-                 api_key_secret_value=None):
+    def call_api(self, data=None, key=None, secret=None):
 
-        kwargs = self.get_api_params(data, x_api_key, api_key_secret_value)
+        kwargs = self.get_api_params(data, key, secret)
 
         return self.api_func()(**kwargs)
 
@@ -68,11 +68,11 @@ class TestSignedApiBase(object):
         )
 
     def test_wrong_x_api_key(self):
-        res = self.call_api(x_api_key="some_wrong_x_api_key")
+        res = self.call_api(key="some_wrong_x_api_key")
         self.assertEqual(res.status_code, 400)
 
     def test_wrong_secret(self):
-        res = self.call_api(api_key_secret_value="wrong_secret")
+        res = self.call_api(secret="wrong_secret")
         self.assertEqual(res.status_code, 404)
 
 

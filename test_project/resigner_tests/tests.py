@@ -50,15 +50,29 @@ class TestSignedApiBase(object):
         }
 
     def call_api(self, data=None, key=None, secret=None):
-
         kwargs = self.get_api_params(data, key, secret)
 
         return self.api_func()(**kwargs)
 
-
     def test_api_result_ok(self):
         self.assert_200_res_ok(
             self.call_api()
+        )
+
+    def test_api_result_ok_specific_key_secret(self):
+        ApiKey.objects.all().delete()
+        self.assertEqual(ApiKey.objects.all().count(), 0)
+
+        api_key = ApiKey.objects.create(
+            key="some_specific_key_873#28hh27832",
+            secret="some_specific_secret_gsY73#28hh27__2",
+        )
+
+        self.assert_200_res_ok(
+            self.call_api(
+                key=api_key.key,
+                secret=api_key.secret
+            )
         )
 
     def test_api_result_ok_dummy_param(self):
@@ -74,7 +88,6 @@ class TestSignedApiBase(object):
     def test_wrong_secret(self):
         res = self.call_api(secret="wrong_secret")
         self.assertEqual(res.status_code, 404)
-
 
     def deconstructed_client_api_call(self, callback_func=None):
         params = self.get_api_params()
@@ -103,7 +116,6 @@ class TestSignedApiBase(object):
         res = self.deconstructed_client_api_call(simulate_missing_header)
 
         self.assertEqual(res.status_code, 404)
-
 
     def selfAssertTimeStampDiff(self, diff, result):
         def simulate_outdated_timestamp(req):
@@ -134,7 +146,6 @@ class TestSignedApiBase(object):
         res = self.deconstructed_client_api_call(simulate_missing_header)
 
         self.assertEqual(res.status_code, 404)
-
 
     def test_signature_changes_each_second(self):
         signatures = []

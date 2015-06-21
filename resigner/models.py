@@ -1,10 +1,13 @@
-from django.db import models
 import random
 import string
 
+from django.db import models
 
 def random_string(length):
-    return ''.join(random.choice(_chars_for_secret) for _ in range(length))
+    return ''.join(
+        random.SystemRandom().choice(string.ascii_letters + string.digits)
+        for _ in range(length)
+    )
     
 def mk_key():
     return random_string(24)

@@ -9,7 +9,7 @@ TEMPLATE_DEBUG = DEBUG
 
 SECRET_KEY = "thisIsTotallyASecretJkLolHaHa!1!!1!"
 
-TEST_RESIGNER_X_API_KEY = "some_per_client_x_api_key"
+TEST_RESIGNER_X_API_KEY = "this_is_how_im_identified_8712bhjds"
 
 RESIGNER_API_MAX_DELAY = 1
 

@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.conf import settings
 
-from resigner.models import ApiKey, ApiClient
+from resigner.models import ApiKey
 from resigner.client import post_signed, get_signed, _send_req, _create_signed_req
 from resigner.utils import CLIENT_TIME_STAMP_KEY, CLIENT_API_SIGNATURE_KEY
 
@@ -17,13 +17,8 @@ class TestSignedApiBase(object):
         self.api_key_secret_value = "some_test_secret_value"
 
         ApiKey.objects.create(
-            key="MY_API_KEY",
-            secret=self.api_key_secret_value,
-        )
-
-        ApiClient.objects.create(
-            name="My test client",
             key=settings.TEST_RESIGNER_X_API_KEY,
+            secret=self.api_key_secret_value,
         )
 
         self.url = self.live_server_url + reverse("my_test_api")

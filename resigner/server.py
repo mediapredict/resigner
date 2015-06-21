@@ -5,7 +5,9 @@ from django.conf import settings
 from django.core import signing
 from django.http import Http404, HttpResponseBadRequest
 
-from .models import ApiKey, ApiClient
+from django.core.signing import Signer
+
+from .models import ApiKey
 from .utils import data_hash, get_settings_param, \
     SERVER_TIME_STAMP_KEY, SERVER_API_SIGNATURE_KEY, SERVER_API_KEY
 
@@ -23,8 +25,8 @@ def signed_req_required(api_secret_key_name):
 
                 client_identification = request.META[SERVER_API_KEY]
                 try:
-                    api_client = ApiClient.objects.get(key=client_identification)
-                except ApiClient.DoesNotExist:
+                    api_client = ApiKey.objects.get(key=client_identification)
+                except ApiKey.DoesNotExist:
                     time.sleep(1) # rate limiting
 
                 return api_client
@@ -47,17 +49,11 @@ def signed_req_required(api_secret_key_name):
                 api_signature = request.META[SERVER_API_SIGNATURE_KEY]
 
                 try:
-                    api_secret_key = ApiKey.objects.get(key=api_secret_key_name).secret
                     time_stamp = request.META[SERVER_TIME_STAMP_KEY]
                     url = request.build_absolute_uri()
-                    max_delay = get_settings_param("RESIGNER_API_MAX_DELAY", 10)
+                    value = data_hash(request.body, time_stamp, url)
 
-                    x_api_key_args = {
-                        "s": api_signature,
-                        "key": api_secret_key + data_hash(request.body, time_stamp, url),
-                        "max_age": max_delay,
-                        }
-                    if api_client.key == signing.loads(**x_api_key_args):
+                    if value == Signer(key=api_client.secret).unsign(api_signature):
                         return True
 
                 except:

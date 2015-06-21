@@ -1,7 +1,7 @@
 import time
 from requests import Request, Session
 
-from django.core import signing
+from django.core.signing import Signer
 
 from .utils import data_hash
 from .utils import data_hash, get_settings_param, \
@@ -11,9 +11,10 @@ from .utils import data_hash, get_settings_param, \
 def _get_security_headers(req_body, x_api_key, api_secret_key, url,
                          header_api_key=CLIENT_API_SIGNATURE_KEY):
     time_stamp = str(int(time.time()))
-    key = api_secret_key + data_hash(req_body, time_stamp, url)
 
-    value = signing.dumps(x_api_key, key=key)
+    value = Signer(key=api_secret_key).sign(
+        data_hash(req_body, time_stamp, url)
+    )
 
     return {
         CLIENT_API_KEY: x_api_key, # uniquely identifies client

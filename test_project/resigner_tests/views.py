@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from resigner.server import signed_req_required
 
-@signed_req_required("MY_API_KEY")
+@signed_req_required
 @csrf_exempt
 def my_test_api_view(request):
     is_post = (request.method == 'POST')

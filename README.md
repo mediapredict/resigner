@@ -2,6 +2,10 @@
 
 # Resigner doc
 
+## What it does
+Signes API requests: each _client_ is identified by its key and granted access by a secret.
+(no secret transmitted over to _server_ - used only to sign a request)
+
 ## How to install
 
 ```
@@ -36,15 +40,14 @@ from django.http import JsonResponse
 
 from resigner.server import signed_req_required
 
-@signed_req_required("MY_API_KEY")
+@signed_req_required
 def my_api_view(request):
     resp = {"result": "this API has been protected with secret key"}
     return JsonResponse(resp)
 ```
 
 Add through admin:
-* in `ApiKeys` (this identifies the API): _MY_API_KEY_ (key) and _my_secret_key_ (secret)
-* in `ApiClients` (this identifies the client): _MY_TEST_CLIENT_ (name) _and my_client_key_ (key)
+* in `ApiKeys`: _MY_API_KEY_ (key, used to identify a client) and _my_secret_key_ (secret, used to get access)
 
 
 ### Client
@@ -53,7 +56,7 @@ Add through admin:
 ```python
 ...
 res = post_signed(
-    "http://mysite/api_url", {"key": "val"}, "my_client_key", "my_secret_key"
+    "http://mysite/api_url", {"some": "data_we_want_to_transmit"}, "my_client_key", "my_secret_key"
 )
 
 if res.status_code == 200:

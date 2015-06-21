@@ -24,7 +24,7 @@ INSTALLED_APPS = (
 Optional
 
 ```python
-RESIGNER_API_MAX_DELAY = 1 # max delay in seconds
+RESIGNER_API_MAX_DELAY = 30 # max delay in seconds (default 5*60 seconds)
 ```
 
 ## Usage (in progress)

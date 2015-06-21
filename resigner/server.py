@@ -36,7 +36,7 @@ def signed_req_required(api_secret_key_name):
                     return False
                 received_times_stamp = request.META[SERVER_TIME_STAMP_KEY]
 
-                max_delay = get_settings_param("RESIGNER_TIME_STAMP_MAX_DELAY", 5*60)
+                max_delay = get_settings_param("RESIGNER_API_MAX_DELAY", 5*60)
                 time_stamp_now = time.time()
 
                 return (

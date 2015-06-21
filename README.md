@@ -49,9 +49,10 @@ def my_api_view(request):
 Add through admin:
 * in `ApiKeys`: _MY_API_KEY_ (key, used to identify a client) and _my_secret_key_ (secret, used to get access)
 
+You may use auto generated or provide specific value.
+
 
 ### Client
-
 
 ```python
 ...

@@ -41,8 +41,8 @@ class TestSignedApiBase(object):
         return {
             "url": self.url,
             "data": data,
-            "x_api_key": api_key,
-            "api_secret_key": api_secret,
+            "key": api_key,
+            "secret": api_secret,
         }
 
     def call_api(self, data="default", key=None, secret=None):

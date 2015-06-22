@@ -28,12 +28,8 @@ class TestSignedApiBase(object):
         self.assertEqual(res.status_code, 200)
         self.assertApiResult(res, "test ok")
 
-    def get_api_params(self, data=None,
-                 api_key=None,
-                 api_secret=None):
-
-
-        if data == None:
+    def get_api_params(self, data="default", api_key=None, api_secret=None):
+        if data == "default":
             data = {u"MY_TEST_DATA": u"hello from test script!"}
 
         if api_key == None:
@@ -49,7 +45,7 @@ class TestSignedApiBase(object):
             "api_secret_key": api_secret,
         }
 
-    def call_api(self, data=None, key=None, secret=None):
+    def call_api(self, data="default", key=None, secret=None):
         kwargs = self.get_api_params(data, key, secret)
 
         return self.api_func()(**kwargs)
@@ -182,8 +178,21 @@ class TestSignedApiPost(LiveServerTestCase, TestSignedApiBase):
     def api_func(self):
         return post_signed
 
-    def test_api_result_ok_answer_not_ok(self):
-        res = self.call_api({u"SOMETHING_UNEXPECTED": u"some_val"})
-
+    def assert_200_res_no_data(self, res):
         self.assertEqual(res.status_code, 200)
         self.assertApiResult(res, "no data received")
+
+    def test_api_result_ok_answer_not_ok(self):
+        self.assert_200_res_no_data(
+            self.call_api(
+                data={u"SOMETHING_UNEXPECTED": u"some_val"}
+            )
+        )
+
+    def test_api_result_ok_empty_data(self):
+        empty_req_body = [None, {}, ""]
+
+        for body in empty_req_body:
+            self.assert_200_res_no_data(
+                self.call_api(data=body)
+            )

@@ -16,6 +16,9 @@ SERVER_API_SIGNATURE_KEY = to_server_key(CLIENT_API_SIGNATURE_KEY)
 SERVER_API_KEY = to_server_key(CLIENT_API_KEY)
 
 def data_hash(req_body, time_stamp, url):
+    if not req_body:
+        req_body = ""
+
     hash = hashlib.sha1()
     hash.update(req_body + time_stamp + url)
     return hash.hexdigest()[:10]

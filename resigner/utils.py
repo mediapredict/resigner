@@ -1,6 +1,7 @@
 import hashlib
 
 from django.conf import settings
+from django.core.signing import Signer
 
 HEADER_KEY_PREFIX = "RESIGNER"
 
@@ -15,13 +16,12 @@ SERVER_TIME_STAMP_KEY = to_server_key(CLIENT_TIME_STAMP_KEY)
 SERVER_API_SIGNATURE_KEY = to_server_key(CLIENT_API_SIGNATURE_KEY)
 SERVER_API_KEY = to_server_key(CLIENT_API_KEY)
 
-def data_hash(req_body, time_stamp, url):
-    if not req_body:
-        req_body = ""
+def get_signature(secret, body, timestamp, url):
+    if not body:
+        body = ""
 
-    hash = hashlib.sha1()
-    hash.update(req_body + time_stamp + url)
-    return hash.hexdigest()[:10]
+    signer = Signer(key=secret)
+    return signer.signature( ":".join([body, timestamp, url]) )
 
 def get_settings_param(name, default=0):
     if hasattr(settings, name):

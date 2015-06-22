@@ -3,24 +3,17 @@ import urllib
 import urlparse
 from requests import Request, Session
 
-from django.core.signing import Signer
-
-from .utils import data_hash
-from .utils import data_hash, get_settings_param, \
+from .utils import get_signature, get_settings_param, \
     CLIENT_TIME_STAMP_KEY, CLIENT_API_SIGNATURE_KEY, CLIENT_API_KEY
-
 
 def _get_security_headers(req_body, key, secret, url,
                          header_api_key=CLIENT_API_SIGNATURE_KEY):
     time_stamp = str(int(time.time()))
-
-    value = Signer(key=secret).sign(
-        data_hash(req_body, time_stamp, url)
-    )
+    signature = get_signature(secret, req_body, time_stamp, url)
 
     return {
         CLIENT_API_KEY: key, # uniquely identifies client
-        header_api_key: value,
+        header_api_key: signature,
         CLIENT_TIME_STAMP_KEY: time_stamp
     }
 

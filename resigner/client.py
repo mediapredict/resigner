@@ -3,7 +3,7 @@ import urllib
 import urlparse
 from requests import Request, Session
 
-from .utils import get_signature, get_settings_param, \
+from .utils import get_signature, \
     CLIENT_TIME_STAMP_KEY, CLIENT_API_SIGNATURE_KEY, CLIENT_API_KEY
 
 def _get_security_headers(req_body, key, secret, url,

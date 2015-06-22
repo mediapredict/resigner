@@ -158,6 +158,24 @@ class TestSignedApiBase(object):
         # all signatures are different
         self.assertEqual(len(set(signatures)), 3)
 
+    def assert_200_res_no_data(self, res):
+        self.assertEqual(res.status_code, 200)
+        self.assertApiResult(res, "no data received")
+
+    def test_api_result_ok_answer_not_ok(self):
+        self.assert_200_res_no_data(
+            self.call_api(
+                data={u"SOMETHING_UNEXPECTED": u"some_val"}
+            )
+        )
+
+    def test_api_result_ok_empty_data(self):
+        empty_req_body = [None, {}, ""]
+
+        for body in empty_req_body:
+            self.assert_200_res_no_data(
+                self.call_api(data=body)
+            )
 
 class TestSignedApiGet(LiveServerTestCase, TestSignedApiBase):
     method_name = "GET"
@@ -177,22 +195,3 @@ class TestSignedApiPost(LiveServerTestCase, TestSignedApiBase):
 
     def api_func(self):
         return post_signed
-
-    def assert_200_res_no_data(self, res):
-        self.assertEqual(res.status_code, 200)
-        self.assertApiResult(res, "no data received")
-
-    def test_api_result_ok_answer_not_ok(self):
-        self.assert_200_res_no_data(
-            self.call_api(
-                data={u"SOMETHING_UNEXPECTED": u"some_val"}
-            )
-        )
-
-    def test_api_result_ok_empty_data(self):
-        empty_req_body = [None, {}, ""]
-
-        for body in empty_req_body:
-            self.assert_200_res_no_data(
-                self.call_api(data=body)
-            )

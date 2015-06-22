@@ -10,6 +10,6 @@ def my_test_api_view(request):
     req = request.POST if is_post else request.GET
     test_data = req.get("MY_TEST_DATA", "")
 
-    result = "test ok" if test_data or not is_post else "no data received"
+    result = "test ok" if test_data else "no data received"
 
     return JsonResponse({"result":result})

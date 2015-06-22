@@ -1,4 +1,6 @@
 import time
+import urllib
+import urlparse
 from requests import Request, Session
 
 from django.core.signing import Signer
@@ -22,7 +24,19 @@ def _get_security_headers(req_body, key, secret, url,
         CLIENT_TIME_STAMP_KEY: time_stamp
     }
 
+def _append_dict_params(url, params):
+    url_parts = list(urlparse.urlparse(url))
+    query = dict(urlparse.parse_qsl(url_parts[4]))
+    query.update(params)
+
+    url_parts[4] = urllib.urlencode(query)
+
+    return urlparse.urlunparse(url_parts)
+
 def _create_signed_req(method, url, data, key, secret):
+    if method == "GET" and data and isinstance(data, dict):
+        url = _append_dict_params(url, data)
+
     req = Request(method, url, data=data)
 
     prepped = req.prepare()

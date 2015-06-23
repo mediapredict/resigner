@@ -5,12 +5,13 @@ python:
   - "3.4"
 
 env:
+  - DJANGO_VERSION=1.4
   - DJANGO_VERSION=1.7
   - DJANGO_VERSION=1.8
 
 matrix:
   allow_failures:
-    - env: DJANGO_VERSION=dev
+    - env: DJANGO_VERSION=.14
     - python: "3.4"
 
 install:

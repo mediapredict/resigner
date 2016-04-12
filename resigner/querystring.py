@@ -17,6 +17,7 @@ def _generate_signature(params, secret, timestamp):
 
 
 def sign(params, key, secret):
+    params = {str(k): str(v) for (k, v) in params.items()}
     timestamp = str(int(time.time()))
 
     params["signature"] = _generate_signature(params, secret, timestamp)
@@ -27,24 +28,29 @@ def sign(params, key, secret):
 
 def validate(querystring, max_age=60*60):
     params = dict(urlparse.parse_qsl(querystring))
-    timestamp = int(params["timestamp"])
-    time_stamp_expired = timestamp + max_age
 
-    for key in ["timestamp", "key", "signature",]:
+    for key in ["timestamp", "key", "signature", ]:
         if key not in params:
             raise ValidationError("{0} must exist".format(key))
+
+    key = params.pop("key")
+    signature = params.pop("signature")
+
+    timestamp = params.pop("timestamp")
+    time_stamp_expired = int(timestamp) + max_age
+
 
     if time.time() > time_stamp_expired:
         raise ValidationError("Timestamp Expired")
 
     try:
-        key = ApiKey.objects.get(key=params["key"])
+        api_key = ApiKey.objects.get(key=key)
     except ApiKey.DoesNotExist:
         raise ValidationError("Key does not exist")
 
-    signature = _generate_signature(params, key.secret, timestamp)
+    new_signature = _generate_signature(params, api_key.secret, timestamp)
 
-    if signature != params["signature"]:
+    if new_signature != signature:
         raise ValidationError("Your signature was invalid")
 
     return True

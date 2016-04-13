@@ -15,7 +15,6 @@ def _generate_signature(params, secret, timestamp):
     encoded_params = json.dumps(params, sort_keys=True)
     return signer.signature(":".join([timestamp, encoded_params]))
 
-
 def sign(params, key, secret):
     params = {str(k): str(v) for (k, v) in params.items()}
     timestamp = str(int(time.time()))
@@ -54,10 +53,3 @@ def validate(querystring, max_age=60*60):
         raise ValidationError("Your signature was invalid")
 
     return True
-
-
-
-
-
-
-

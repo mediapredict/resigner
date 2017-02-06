@@ -1,7 +1,7 @@
 import time
 import json
-import urlparse
-from urllib import urlencode
+import urllib.parse
+from urllib.parse import urlencode
 from django.core.signing import Signer
 
 from resigner.models import ApiKey
@@ -16,7 +16,7 @@ def _generate_signature(params, secret, timestamp):
     return signer.signature(":".join([timestamp, encoded_params]))
 
 def sign(params, key, secret):
-    params = {str(k): str(v) for (k, v) in params.items()}
+    params = {str(k): str(v) for (k, v) in list(params.items())}
     timestamp = str(int(time.time()))
 
     params["signature"] = _generate_signature(params, secret, timestamp)
@@ -26,7 +26,7 @@ def sign(params, key, secret):
     return urlencode(params)
 
 def validate(querystring, max_age=60*60):
-    params = dict(urlparse.parse_qsl(querystring))
+    params = dict(urllib.parse.parse_qsl(querystring))
 
     for key in ["timestamp", "key", "signature", ]:
         if key not in params:

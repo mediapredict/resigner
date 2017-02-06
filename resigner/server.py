@@ -18,7 +18,7 @@ def signed_req_required(view_func):
         def identify_api_client():
             api_client = None
 
-            if not SERVER_API_KEY in request.META.keys():
+            if not SERVER_API_KEY in list(request.META.keys()):
                 return api_client
 
             client_identification = request.META[SERVER_API_KEY]
@@ -30,7 +30,7 @@ def signed_req_required(view_func):
             return api_client
 
         def is_time_stamp_valid():
-            if not SERVER_TIME_STAMP_KEY in request.META.keys():
+            if not SERVER_TIME_STAMP_KEY in list(request.META.keys()):
                 return False
             received_times_stamp = request.META[SERVER_TIME_STAMP_KEY]
 
@@ -42,7 +42,7 @@ def signed_req_required(view_func):
             )
 
         def is_signature_ok():
-            if not SERVER_API_SIGNATURE_KEY in request.META.keys():
+            if not SERVER_API_SIGNATURE_KEY in list(request.META.keys()):
                 return False
             api_signature = request.META[SERVER_API_SIGNATURE_KEY]
 

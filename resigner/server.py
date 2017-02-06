@@ -45,7 +45,12 @@ def signed_req_required(view_func):
             try:
                 time_stamp = request.META[SERVER_TIME_STAMP_KEY]
                 url = request.build_absolute_uri()
-                expected_signature = get_signature(api_client.secret, request.body, time_stamp, url)
+                expected_signature = get_signature(
+                    api_client.secret,
+                    request.body.decode("utf-8"),
+                    time_stamp,
+                    url
+                )
 
                 if api_signature == expected_signature:
                     return True

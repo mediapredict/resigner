@@ -10,6 +10,11 @@ env:
   - DJANGO_VERSION=1.9
   - DJANGO_VERSION=1.10.5
 
+matrix:
+  allow_failures:
+    - env: DJANGO_VERSION=1.7
+      python: "3.6"
+
 install:
   - pip install django==${DJANGO_VERSION}
   - pip install .

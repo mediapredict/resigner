@@ -1,12 +1,19 @@
 import time
-import urllib.parse
-from urllib.parse import urlencode
+
+try:
+    # python >= 3
+    from urllib.parse import urlencode, parse_qsl
+
+except ImportError:
+    # python < 3
+    from urlparse import parse_qsl
+    from urllib import urlencode
+
 
 from django.test import TestCase
 
 from resigner.models import ApiKey
 from resigner import querystring
-
 
 class TestQueryString(TestCase):
 
@@ -23,7 +30,7 @@ class TestQueryString(TestCase):
 
     def test_signature_in_querystring(self):
         signed_qs = querystring.sign({"kfid": 1}, key=self.apikey.key, secret=self.apikey.secret)
-        params = dict(urllib.parse.parse_qsl(signed_qs))
+        params = dict(parse_qsl(signed_qs))
         self.assertTrue("signature={0}".format(params["signature"]) in signed_qs)
 
     def test_validate(self):

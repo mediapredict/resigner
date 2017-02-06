@@ -2,8 +2,7 @@ import time
 import urllib.parse
 from urllib.parse import urlencode
 
-from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
+from django.test import TestCase
 
 from resigner.models import ApiKey
 from resigner import querystring

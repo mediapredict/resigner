@@ -1,11 +1,7 @@
 from functools import wraps
 import time
 
-from django.conf import settings
-from django.core import signing
 from django.http import Http404, HttpResponseBadRequest
-
-from django.core.signing import Signer
 
 from .models import ApiKey
 from .utils import get_signature, get_settings_param, \

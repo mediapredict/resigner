@@ -4,7 +4,6 @@ import time
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.test.client import Client
-from django.conf import settings
 
 from resigner.models import ApiKey
 from resigner.client import post_signed, get_signed, _send_req, _create_signed_req

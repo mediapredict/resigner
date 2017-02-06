@@ -1,6 +1,4 @@
 import time
-import urllib.request, urllib.parse, urllib.error
-import urllib.parse
 from requests import Request, Session
 
 from .utils import get_signature, \

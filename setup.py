@@ -20,6 +20,7 @@ setup(
     install_requires=[
         "django >= 1.7",
         "requests >= 2.5",
+        "future >= 2.5",
     ],
     long_description=__doc__,
     classifiers=[

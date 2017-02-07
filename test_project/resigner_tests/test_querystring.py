@@ -1,14 +1,9 @@
 import time
 
-try:
-    # python >= 3
-    from urllib.parse import urlencode, parse_qsl
+from future import standard_library
+standard_library.install_aliases()
 
-except ImportError:
-    # python < 3
-    from urlparse import parse_qsl
-    from urllib import urlencode
-
+from urllib.parse import urlencode, parse_qsl
 
 from django.test import TestCase
 

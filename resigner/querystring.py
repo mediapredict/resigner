@@ -27,7 +27,7 @@ def sign(params, key, secret):
     params["key"] = key
     params["timestamp"] = timestamp
 
-    return urlencode(params)
+    return "{}".format(urlencode(params))
 
 def validate(querystring, max_age=60*60):
     params = dict(parse_qsl(querystring))

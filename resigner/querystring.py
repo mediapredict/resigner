@@ -20,7 +20,7 @@ def _generate_signature(params, secret, timestamp):
     return signer.signature(":".join([timestamp, encoded_params]))
 
 def sign(params, key, secret):
-    params = {str(k): str(v) for (k, v) in list(params.items())}
+    params = {str(k): str(v) for (k, v) in params.items()}
     timestamp = str(int(time.time()))
 
     params["signature"] = _generate_signature(params, secret, timestamp)

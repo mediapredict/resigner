@@ -1,10 +1,11 @@
+from __future__ import unicode_literals
+
 import json
 import time
 
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.test.client import Client
-from django.conf import settings
 
 from resigner.models import ApiKey
 from resigner.client import post_signed, get_signed, _send_req, _create_signed_req
@@ -30,7 +31,7 @@ class TestSignedApiBase(object):
 
     def get_api_params(self, data="default", api_key=None, api_secret=None):
         if data == "default":
-            data = {u"MY_TEST_DATA": u"hello from test script!"}
+            data = {"MY_TEST_DATA": "hello from test script!"}
 
         if api_key == None:
             api_key = self.api_key
@@ -165,7 +166,7 @@ class TestSignedApiBase(object):
     def test_api_result_ok_answer_not_ok(self):
         self.assert_200_res_no_data(
             self.call_api(
-                data={u"SOMETHING_UNEXPECTED": u"some_val"}
+                data={"SOMETHING_UNEXPECTED": "some_val"}
             )
         )
 

@@ -1,7 +1,11 @@
 import time
 import json
-import urlparse
-from urllib import urlencode
+
+from future import standard_library
+standard_library.install_aliases()
+
+from urllib.parse import urlencode, parse_qsl
+
 from django.core.signing import Signer
 
 from resigner.models import ApiKey
@@ -23,10 +27,10 @@ def sign(params, key, secret):
     params["key"] = key
     params["timestamp"] = timestamp
 
-    return urlencode(params)
+    return "{}".format(urlencode(params))
 
 def validate(querystring, max_age=60*60):
-    params = dict(urlparse.parse_qsl(querystring))
+    params = dict(parse_qsl(querystring))
 
     for key in ["timestamp", "key", "signature", ]:
         if key not in params:

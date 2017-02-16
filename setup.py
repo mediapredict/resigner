@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='resigner',
-    version='0.2.1',
+    version='0.3.0',
     author='Mediapredict',
     author_email='engineering@mediapredict.com',
     description=('Django app that provides a way to simply secure your APIs'),
@@ -20,6 +20,7 @@ setup(
     install_requires=[
         "django >= 1.7",
         "requests >= 2.5",
+        "future >= 0.16.0",
     ],
     long_description=__doc__,
     classifiers=[

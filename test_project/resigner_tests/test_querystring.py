@@ -1,13 +1,14 @@
 import time
-import urlparse
-from urllib import urlencode
 
-from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
+from future import standard_library
+standard_library.install_aliases()
+
+from urllib.parse import urlencode, parse_qsl
+
+from django.test import TestCase
 
 from resigner.models import ApiKey
 from resigner import querystring
-
 
 class TestQueryString(TestCase):
 
@@ -24,7 +25,7 @@ class TestQueryString(TestCase):
 
     def test_signature_in_querystring(self):
         signed_qs = querystring.sign({"kfid": 1}, key=self.apikey.key, secret=self.apikey.secret)
-        params = dict(urlparse.parse_qsl(signed_qs))
+        params = dict(parse_qsl(signed_qs))
         self.assertTrue("signature={0}".format(params["signature"]) in signed_qs)
 
     def test_validate(self):

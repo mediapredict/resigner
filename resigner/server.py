@@ -33,12 +33,15 @@ def signed_req_required(view_func):
             max_delay = get_settings_param("RESIGNER_API_MAX_DELAY", 5*60)
             time_stamp_now = time.time()
 
-            return (
+            ts_valid = (
                 abs(int(time_stamp_now) - int(received_times_stamp)) < max_delay
             )
+            print("ts_valid {}".format(ts_valid))
+            return ts_valid
 
         def is_signature_ok():
             if not SERVER_API_SIGNATURE_KEY in request.META.keys():
+                print("is_signature_nok1")
                 return False
             api_signature = request.META[SERVER_API_SIGNATURE_KEY]
 
@@ -55,7 +58,10 @@ def signed_req_required(view_func):
                 if api_signature == expected_signature:
                     return True
 
+                print("is_signature_nok2")
+
             except:
+                print("is_signature_nok3")
                 pass
 
             return False

@@ -34,7 +34,7 @@ def signed_req_required(view_func):
             time_stamp_now = time.time()
 
             return (
-                abs(int(time_stamp_now) - int(received_times_stamp)) < max_delay
+                abs(time_stamp_now - float(received_times_stamp)) < max_delay
             )
 
         def is_signature_ok():
@@ -70,4 +70,3 @@ def signed_req_required(view_func):
             raise Http404
 
     return wraps(view_func)(check_signature)
-

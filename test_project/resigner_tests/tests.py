@@ -119,7 +119,7 @@ class TestSignedApiBase(object):
             key = CLIENT_TIME_STAMP_KEY
             ts = req.headers[key.lower()]
             req.headers.update(
-                {key: str( int(ts) + diff )}
+                {key: str(float(ts) + diff)}
             )
 
         res = self.deconstructed_client_api_call(simulate_outdated_timestamp)

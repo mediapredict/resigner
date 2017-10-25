@@ -6,7 +6,7 @@ from .utils import get_signature, \
 
 def _get_security_headers(req_body, key, secret, url,
                          header_api_key=CLIENT_API_SIGNATURE_KEY):
-    time_stamp = str(int(time.time()))
+    time_stamp = "{0:.4f}".format(time.time())
     signature = get_signature(secret, req_body, time_stamp, url)
 
     return {

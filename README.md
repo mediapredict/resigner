@@ -75,15 +75,18 @@ KF_URL = 'https://knittingfactory.herokuapp.com'
 
 api_url = "{0}/explorer/api/search".format(settings.KF_URL)
 request_data = {
-'''
-"your_daffodil" = "one long string"
-'''
+    "q" : 
+    '''
+    "your_daffodil" = "one long string"
+    ''',
+    "flat" = False, # True will return kfid only
+}
 res = client.post_signed(api_url,
                          request_data,
                          settings.KF_API_KEY,
                          settings.KF_SECRET)
                        
-}
+
 ```
 
 `res.json()` will access the data dictionary

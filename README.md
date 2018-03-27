@@ -71,6 +71,8 @@ else:
 In the case of connecting to Knitting Factory
 
 ```python
+KF_URL = 'https://knittingfactory.herokuapp.com'
+
 api_url = "{0}/explorer/api/search".format(settings.KF_URL)
 request_data = {
 '''

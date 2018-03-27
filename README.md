@@ -55,7 +55,8 @@ You may use auto generated or provide specific value.
 ### Client
 
 ```python
-...
+from resigner.client import post_signed, get_signed
+
 res = post_signed(
     "http://mysite/api_url", {"some": "data_we_want_to_transmit"}, "my_client_key", "my_secret_key"
 )

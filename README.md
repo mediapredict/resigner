@@ -68,4 +68,22 @@ else:
 ...
 ```
 
+In the case of connecting to Knitting Factory
+
+```python
+api_url = "{0}/explorer/api/search".format(settings.KF_URL)
+request_data = {
+'''
+"your_daffodil" = "one long string"
+'''
+res = client.post_signed(api_url,
+                         request_data,
+                         settings.KF_API_KEY,
+                         settings.KF_SECRET)
+                       
+}
+```
+
+`res.json()` will access the data dictionary
+
 Make sure _MY_API_KEY_ and _MY_TEST_CLIENT_ have been added in the server's DB as explained above.

@@ -81,7 +81,7 @@ request_data = {
     ''',
     "flat" = False, # True will return kfid only
 }
-res = client.post_signed(api_url,
+res = post_signed(api_url,
                          request_data,
                          settings.KF_API_KEY,
                          settings.KF_SECRET)

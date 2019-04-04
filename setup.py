@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='resigner',
-    version='0.3.1',
+    version='0.3.2',
     author='Mediapredict',
     author_email='engineering@mediapredict.com',
     description=('Django app that provides a way to simply secure your APIs'),
@@ -18,7 +18,7 @@ setup(
     packages=['resigner', 'resigner.migrations'],
     package_data={},
     install_requires=[
-        "django >= 1.7",
+        "django >= 2.0",
         "requests >= 2.5",
         "future >= 0.16.0",
     ],

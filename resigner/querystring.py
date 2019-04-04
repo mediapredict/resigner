@@ -10,7 +10,10 @@ from django.core.signing import Signer
 
 from resigner.models import ApiKey
 
+
 TIMESTAMP_TAG = "_timestamp"
+KEY_TAG = "key"
+SIGNATURE_TAG = "signature"
 
 
 class ValidationError(Exception):
@@ -27,8 +30,8 @@ def sign(params, key, secret):
     params = {str(k): str(v) for (k, v) in params.items()}
     timestamp = str(int(time.time()))
 
-    params["signature"] = _generate_signature(params, secret, timestamp)
-    params["key"] = key
+    params[SIGNATURE_TAG] = _generate_signature(params, secret, timestamp)
+    params[KEY_TAG] = key
     params[TIMESTAMP_TAG] = timestamp
 
     return "{}".format(urlencode(params))
@@ -37,12 +40,12 @@ def sign(params, key, secret):
 def validate(querystring, max_age=60*60):
     params = dict(parse_qsl(querystring))
 
-    for key in ["timestamp", "key", "signature", ]:
+    for key in [TIMESTAMP_TAG, KEY_TAG, SIGNATURE_TAG, ]:
         if key not in params:
             raise ValidationError("{0} must exist".format(key))
 
-    key = params.pop("key")
-    signature = params.pop("signature")
+    key = params.pop(KEY_TAG)
+    signature = params.pop(SIGNATURE_TAG)
 
     timestamp = params.pop(TIMESTAMP_TAG)
     time_stamp_expired = int(timestamp) + max_age

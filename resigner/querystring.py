@@ -1,14 +1,10 @@
 import time
 import json
-
-from future import standard_library
-standard_library.install_aliases()
-
 from urllib.parse import urlencode, parse_qsl
 
 from django.core.signing import Signer
 
-from resigner.models import ApiKey
+from .models import ApiKey
 
 
 TIMESTAMP_TAG = "_timestamp"
@@ -21,7 +17,7 @@ class ValidationError(Exception):
     pass
 
 
-def _generate_signature(params, secret, timestamp, expiry):
+def _get_signature(params, secret, timestamp, expiry):
     signer = Signer(key=secret)
     encoded_params = json.dumps(params, sort_keys=True)
 
@@ -35,7 +31,7 @@ def sign(params, key, secret, expiry=60*60):
     params = {str(k): str(v) for (k, v) in params.items()}
     timestamp = int(time.time())
 
-    params[SIGNATURE_TAG] = _generate_signature(params, secret, timestamp, expiry)
+    params[SIGNATURE_TAG] = _get_signature(params, secret, timestamp, expiry)
     params[KEY_TAG] = key
     params[TIMESTAMP_TAG] = timestamp
     params[EXPIRY_TAG] = expiry
@@ -68,7 +64,7 @@ def validate(querystring):
     except ApiKey.DoesNotExist:
         raise ValidationError("Key does not exist")
 
-    new_signature = _generate_signature(params, api_key.secret, timestamp, expiry)
+    new_signature = _get_signature(params, api_key.secret, timestamp, expiry)
     if new_signature != signature:
         raise ValidationError("Your signature was invalid")
 

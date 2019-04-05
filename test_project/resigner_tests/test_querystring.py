@@ -41,7 +41,7 @@ class TestQueryString(TestCase):
             secret=self.apikey.secret,
             expiry=0
         )
-        self.assertRaises(querystring.ValidationError, querystring.validate, signed_qs)
+        self.assertRaises(querystring.LinkExpired, querystring.validate, signed_qs)
 
     def assertValidationError(self, querystring, signed_qs):
         self.assertRaises(

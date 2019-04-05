@@ -17,6 +17,10 @@ class ValidationError(Exception):
     pass
 
 
+class LinkExpired(Exception):
+    pass
+
+
 def _get_signature(params, secret, timestamp, expiry):
     signer = Signer(key=secret)
     encoded_params = json.dumps(params, sort_keys=True)
@@ -57,7 +61,7 @@ def validate(querystring):
 
     time_stamp_expired = int(timestamp) + int(expiry)
     if time.time() > time_stamp_expired:
-        raise ValidationError("Timestamp Expired")
+        raise LinkExpired("Timestamp Expired")
 
     try:
         api_key = ApiKey.objects.get(key=key)

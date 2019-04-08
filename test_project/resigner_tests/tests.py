@@ -4,7 +4,7 @@ import json
 import time
 
 from django.test import LiveServerTestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.client import Client
 
 from resigner.models import ApiKey

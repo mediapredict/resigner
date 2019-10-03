@@ -1,14 +1,14 @@
-from __future__ import unicode_literals
-
 import json
 import time
 
 from django.test import LiveServerTestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.client import Client
 
 from resigner.models import ApiKey
-from resigner.client import post_signed, get_signed, _send_req, _create_signed_req
+from resigner.client import (
+    post_signed, get_signed, _send_req, _create_signed_req
+)
 from resigner.utils import CLIENT_TIME_STAMP_KEY, CLIENT_API_SIGNATURE_KEY
 
 

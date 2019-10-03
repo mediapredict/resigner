@@ -23,3 +23,6 @@ class ApiKey(models.Model):
 
     def __unicode__(self):
         return "%s [%s]" % (self.key, self.id)
+
+    def __str__(self):
+        return self.name

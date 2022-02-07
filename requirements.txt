@@ -1,0 +1,5 @@
+# required for testing.
+# REVIEWERS:  should we rename this file requirements-dev.txt to make the testing
+# part clear?
+Django==3.2.7
+requests==2.27.1

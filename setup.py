@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='resigner',
-    version='0.3.9',
+    version='0.3.10',
     author='Mediapredict',
     author_email='engineering@mediapredict.com',
     description=('Django app that provides a way to simply secure your APIs'),

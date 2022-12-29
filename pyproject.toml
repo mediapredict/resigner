@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "resigner"
+version = "0.3.12"
+authors = [
+    {name = "Media Predict"}
+    {email = "engineering@mediapredict.com"}
+]
+description = "Django app that provides a way to simply secure your APIs"
+license = {text = "GPLv3"}
+keywords = ["django", "api", "signed"]
+urls = {homepage = "https://github.com/mediapredict/resigner"}
+requires-python = ">=3.8"
+dependencies = ["django>=4.1.3", "requests>=2.5"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: GNU General Public License (GPL)",
+    "Programming Language :: Python",
+    "Framework :: Django",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Utilities"
+]
+
+[tool.setuptools]
+packages = ["resigner", "resigner.migrations"]

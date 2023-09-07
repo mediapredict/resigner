@@ -32,7 +32,4 @@ def get_signature(secret, body, timestamp, url):
 
 
 def get_settings_param(name, default=0):
-    if hasattr(settings, name):
-        return getattr(settings, name)
-    else:
-        return default
+    return getattr(settings, name, default)

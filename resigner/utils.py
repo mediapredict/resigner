@@ -9,7 +9,7 @@ def add_prefix(key):
 
 
 def to_server_key(key):
-    return f"HTTP_{key}"
+    return f"HTTP_{key}".replace("-", "_")
 
 
 CLIENT_TIME_STAMP_KEY = add_prefix("TIME-STAMP")
